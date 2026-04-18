@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dynamic Memory Management Visualizer</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+  color: white;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: rgba(255,255,255,0.05);
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 60px;
+  background: linear-gradient(135deg, #7b2ff7, #f107a3);
+}
+
+.hero h1 {
+  margin: 0;
+}
+
+/* Layout */
+.container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 15px;
+  flex: 1;
+}
+
+.left {
+  max-width: 300px;
+}
+
+/* Inputs */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+/* Button */
+button {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #7b2ff7, #f107a3);
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Table */
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 8px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background: rgba(255,255,255,0.05);
+}
+
+.miss { color: red; }
+.hit { color: lightgreen; }
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h3>DMMV</h3>
+  <div>Home | Docs</div>
+</div>
+
+<div class="hero">
+  <h1>Dynamic Memory Management Visualizer</h1>
+  <p>Paging • Segmentation • Virtual Memory Simulation</p>
+</div>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="card left">
+    <h3>Controls</h3>
+
+    <label>Total Memory (MB)</label>
+    <input id="memory" value="128">
+
+    <label>Page Size (KB)</label>
+    <input id="pageSize" value="4">
+
+    <label>Frames</label>
+    <input id="frames" value="8">
+
+    <button onclick="runPaging()">Start Paging</button>
+    <button onclick="runSegmentation()">Segmentation</button>
+    <button onclick="runVirtual()">Virtual Memory</button>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="card">
+
+    <canvas id="chart"></canvas>
+
+    <div id="stats"></div>
+
+    <table id="table"></table>
+
+  </div>
+
+</div>
+
+<script>
+
+let chart;
+
+/* ---------------- PAGING (FIFO) ---------------- */
+function runPaging() {
+  let frames = parseInt(document.getElementById("frames").value);
+
+  let pages = Array.from({length: 10}, () => Math.floor(Math.random()*100));
+
+  let frameArr = [];
+  let hits = 0, faults = 0;
+
+  let tableHTML = "<tr><th>Frame</th><th>Page</th><th>Status</th></tr>";
+
+  pages.forEach((page, i) => {
+    if (frameArr.includes(page)) {
+      hits++;
+      tableHTML += `<tr><td>${i}</td><td>${page}</td><td class="hit">Hit</td></tr>`;
+    } else {
+      faults++;
+      if (frameArr.length < frames) {
+        frameArr.push(page);
+      } else {
+        frameArr.shift();
+        frameArr.push(page);
+      }
+      tableHTML += `<tr><td>${i}</td><td>${page}</td><td class="miss">Miss</td></tr>`;
+    }
+  });
+
+  document.getElementById("table").innerHTML = tableHTML;
+  document.getElementById("stats").innerHTML =
+    `Page Hits: ${hits} | Page Faults: ${faults}`;
+
+  drawChart(frameArr, "Paging (FIFO)");
+}
+
+/* ---------------- SEGMENTATION ---------------- */
+function runSegmentation() {
+  let segments = [200, 150, 150, 100];
+
+  drawPie(segments, ["Code", "Stack", "Heap", "Data"]);
+}
+
+/* ---------------- VIRTUAL MEMORY ---------------- */
+function runVirtual() {
+  let pages = Array.from({length: 10}, () => Math.round(Math.random()));
+
+  drawChart(pages, "Virtual Memory (1 = Loaded)");
+}
+
+/* ---------------- CHARTS ---------------- */
+function drawChart(data, label) {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "bar",
+    data: {
+      labels: data.map((_, i) => i),
+      datasets: [{
+        label: label,
+        data: data
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: "white" } }
+      },
+      scales: {
+        x: { ticks: { color: "white" } },
+        y: { ticks: { color: "white" } }
+      }
+    }
+  });
+}
+
+function drawPie(data, labels) {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "pie",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data
+      }]
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>\
