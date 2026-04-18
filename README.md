@@ -1,5 +1,9 @@
 # 🧠 Dynamic Memory Management Visualizer
 
+## 🌐 Live Demo
+
+👉 https://vanshika-kamboj.github.io/dynamic-memory-visualizer/
+
 An interactive web-based tool to visualize core Operating System memory management techniques such as:
 
 - 📦 Paging (FIFO Page Replacement)
