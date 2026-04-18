@@ -66,7 +66,7 @@ This project helps understand:
 
 ## 👨‍💻 Author
 
-Your Name
+Vanshika
 
 ---
 
