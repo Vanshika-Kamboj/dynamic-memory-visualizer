@@ -1,0 +1,44 @@
+function runVirtual() {
+  let pages = Array.from({length: 10}, () => Math.round(Math.random()));
+
+  drawChart(pages, "Virtual Memory (1 = Loaded)");
+}
+
+/* ---------------- CHARTS ---------------- */
+function drawChart(data, label) {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "bar",
+    data: {
+      labels: data.map((_, i) => i),
+      datasets: [{
+        label: label,
+        data: data
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: "white" } }
+      },
+      scales: {
+        x: { ticks: { color: "white" } },
+        y: { ticks: { color: "white" } }
+      }
+    }
+  });
+}
+
+function drawPie(data, labels) {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "pie",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data
+      }]
+    }
+  });
+}
