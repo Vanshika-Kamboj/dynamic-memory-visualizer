@@ -1,0 +1,33 @@
+function runPaging() {
+  let frames = parseInt(document.getElementById("frames").value);
+
+  let pages = Array.from({length: 10}, () => Math.floor(Math.random()*100));
+
+  let frameArr = [];
+  let hits = 0, faults = 0;
+
+  let tableHTML = "<tr><th>Frame</th><th>Page</th><th>Status</th></tr>";
+
+  pages.forEach((page, i) => {
+    if (frameArr.includes(page)) {
+      hits++;
+      tableHTML += `<tr><td>${i}</td><td>${page}</td><td class="hit">Hit</td></tr>`;
+    } else {
+      faults++;
+      if (frameArr.length < frames) {
+        frameArr.push(page);
+      } else {
+        frameArr.shift();
+        frameArr.push(page);
+      }
+      tableHTML += `<tr><td>${i}</td><td>${page}</td><td class="miss">Miss</td></tr>`;
+    }
+  });
+
+  document.getElementById("table").innerHTML = tableHTML;
+  document.getElementById("stats").innerHTML =
+    `Page Hits: ${hits} | Page Faults: ${faults}`;
+
+  drawChart(frameArr, "Paging (FIFO)");
+}
+
